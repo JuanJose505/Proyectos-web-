@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Formulario de voluntariado</title>
+</head>
+
+<body>
+<header>
+    <h1>Unidos por Colombia</h1>
+    <h2>Formulario de inscripción de voluntarios</h2>
+    <p>A continuación, por favor diligencie los siguientes datos. Recuerde que esta información es ficticia y solo tiene fines académicos.</p>
+</header>
+
+<main>
+<form>
+
+    <fieldset>
+        <legend>Datos personales</legend>
+
+        <label for="nombre">Nombre completo</label><br>
+        <input type="text" id="nombre" name="nombre" required minlength="3" maxlength="60">
+        <br><br>
+
+        <label for="documento">Número de documento</label><br>
+        <input type="text" id="documento" name="documento" pattern="[0-9]{6,10}" title="Solo números, entre 6 y 10 dígitos" required>
+        <br><br>
+
+        <label for="correo">Correo electrónico</label><br>
+        <input type="email" id="correo" name="correo" required>
+        <br><br>
+
+        <label for="celular">Celular</label><br>
+        <input type="tel" id="celular" name="celular" pattern="3[0-9]{9}" title="10 dígitos, debe iniciar en 3" required>
+        <br><br>
+
+        <label for="direccion">Dirección de residencia</label><br>
+        <input type="text" id="direccion" name="direccion" required maxlength="120">
+        <br><br>
+
+        <label for="nacimiento">Fecha de nacimiento</label><br>
+        <input type="date" id="nacimiento" name="nacimiento" required max="2008-08-20">
+    </fieldset>
+
+    <br>
+
+    <fieldset>
+        <legend>Área de apoyo</legend>
+        <label for="area">Área en la que desea apoyar</label><br>
+        <select id="area" name="area" required>
+            <option value="" disabled selected>Selecciona un área</option>
+            <optgroup label="Atención a personas">
+                <option value="primeros_auxilios">Primeros auxilios</option>
+                <option value="apoyo_psicosocial">Apoyo psicosocial</option>
+            </optgroup>
+            <optgroup label="Logística">
+                <option value="transporte">Transporte</option>
+                <option value="punto_acopio">Punto de acopio</option>
+            </optgroup>
+            <optgroup label="Apoyo técnico">
+                <option value="soporte_tecnico">Soporte técnico</option>
+                <option value="comunicaciones">Comunicaciones</option>
+            </optgroup>
+        </select>
+    </fieldset>
+
+    <br>
+
+    <fieldset>
+        <legend>EPS</legend>
+        <label for="eps">EPS</label><br>
+        <input type="text" id="eps" name="eps" list="lista-eps" required>
+        <datalist id="lista-eps">
+            <option value="Sura">
+            <option value="Nueva EPS">
+            <option value="Sanitas">
+            <option value="Compensar">
+            <option value="Salud Total">
+        </datalist>
+    </fieldset>
+
+    <br>
+
+    <fieldset>
+        <legend>Experiencia</legend>
+        <label for="experiencia">Experiencia en atención de emergencias (1 a 5)</label><br>
+        <input type="range" id="experiencia" name="experiencia" min="1" max="5" step="1">
+    </fieldset>
+
+    <br>
+
+    <fieldset>
+        <legend>Habilidades</legend>
+
+        <input type="checkbox" id="hab_primeros_auxilios" name="habilidades" value="primeros_auxilios">
+        <label for="hab_primeros_auxilios">Primeros auxilios</label><br>
+
+        <input type="checkbox" id="hab_conduccion" name="habilidades" value="conduccion">
+        <label for="hab_conduccion">Conducción</label><br>
+
+        <input type="checkbox" id="hab_psicosocial" name="habilidades" value="apoyo_psicosocial">
+        <label for="hab_psicosocial">Apoyo psicosocial</label><br>
+
+        <input type="checkbox" id="hab_construccion" name="habilidades" value="construccion">
+        <label for="hab_construccion">Construcción</label><br>
+
+        <input type="checkbox" id="hab_logistica" name="habilidades" value="logistica">
+        <label for="hab_logistica">Logística</label>
+    </fieldset>
+
+    <br>
+
+    <fieldset>
+        <legend>Horas semanales disponibles</legend>
+        <label for="horas">Horas semanales disponibles</label><br>
+        <input type="number" id="horas" name="horas" min="2" max="40" step="2" required>
+    </fieldset>
+
+    <br>
+
+    <fieldset>
+        <legend>Modalidad de apoyo</legend>
+
+        <input type="radio" id="modalidad_campo" name="modalidad" value="campo" required>
+        <label for="modalidad_campo">Campo</label><br>
+
+        <input type="radio" id="modalidad_acopio" name="modalidad" value="punto_acopio">
+        <label for="modalidad_acopio">Punto de acopio</label><br>
+
+        <input type="radio" id="modalidad_remoto" name="modalidad" value="remoto">
+        <label for="modalidad_remoto">Remoto</label>
+    </fieldset>
+
+    <br>
+
+    <fieldset>
+        <legend>Restricciones médicas u observaciones</legend>
+        <label for="observaciones">Restricciones médicas u observaciones</label><br>
+        <textarea id="observaciones" name="observaciones" maxlength="300" rows="4" cols="40"></textarea>
+    </fieldset>
+
+    <br>
+
+    <fieldset>
+        <legend>Hoja de vida</legend>
+        <label for="hoja_vida">Hoja de vida (solo PDF)</label><br>
+        <input type="file" id="hoja_vida" name="hoja_vida" accept="application/pdf">
+    </fieldset>
+
+    <br>
+
+    <fieldset>
+        <legend>Jornada disponible</legend>
+        <label for="jornada">Jornada disponible</label><br>
+        <select id="jornada" name="jornada" required>
+            <option value="" disabled selected>Selecciona una jornada</option>
+            <option value="manana">Mañana</option>
+            <option value="tarde">Tarde</option>
+            <option value="noche">Noche</option>
+        </select>
+    </fieldset>
+
+    <br>
+
+    <fieldset>
+        <legend>Autorización de datos</legend>
+        <input type="checkbox" id="autorizacion" name="autorizacion" required>
+        <label for="autorizacion">Autorizo el tratamiento de mis datos personales conforme a la Ley 1581 de 2012</label>
+    </fieldset>
+
+    <br>
+
+    <button type="submit">Enviar</button>
+    <button type="reset">Limpiar</button>
+
+</form>
+
+<p><a href="index.html">Volver al boletín informativo</a></p>
+</main>
+
+</body>
+</html>
