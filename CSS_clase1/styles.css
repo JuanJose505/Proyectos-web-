@@ -7,6 +7,15 @@
     
 }
 
+
+#Texto{
+    text-align: center;
+    background: #F2F7EC;
+    width: 30%;
+    margin: 0 auto;
+    padding: 40px 0;
+}
+
 .btn-peligro{
     padding: 10px 18px;
     border: none;
@@ -31,9 +40,18 @@ a:visited { color: #6B4FA1; } /* ya visitado */
 a:hover { text-decoration: underline; } /* mouse encima */
 a:active { color: #C0392B; } /* mientras se hace clic */
 
-input:focus { outline: 2px solid #70A448; } /* con el cursor dentro */
+input:focus { outline: 2px solid green; } /* con el cursor dentro */
 input:disabled { background: red; cursor: not-allowed; }
 input:checked { accent-color: #497E4A; }
 input:required { border-left: 3px solid #C0392B; }
 input:invalid { border-color: #C0392B; }
 
+button:disabled { background: #C0392B; cursor:not-allowed; }
+input:checked {accent-color: purple;}
+
+li:first-child {
+    font-weight: bold;
+}
+li:nth-child(5){
+    font-size: x-large;
+}

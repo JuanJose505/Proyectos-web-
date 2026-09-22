@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Variables, valores y tipos de datos en JavaScript</title>
+<style>
+:root{
+  --bg:#0f1115; --panel:#181b22; --panel2:#20242e;
+  --text:#e8e9ee; --muted:#9aa1b1;
+  --accent:#f7c948; --accent2:#6ee7b7; --code:#8ecfff;
+  --border:#2a2f3a;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f5f6f8; --panel:#ffffff; --panel2:#eef0f4;
+    --text:#1c1f26; --muted:#5b6270;
+    --accent:#b8860b; --accent2:#0f9d68; --code:#0b6bb3;
+    --border:#dcdfe6;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1115; --panel:#181b22; --panel2:#20242e;
+  --text:#e8e9ee; --muted:#9aa1b1;
+  --accent:#f7c948; --accent2:#6ee7b7; --code:#8ecfff;
+  --border:#2a2f3a;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  overflow:hidden; padding:16px;
+}
+.deck{ width:100%; max-width:920px; height:min(600px,86vh); position:relative; }
+.slide{
+  display:none; height:100%; background:var(--panel);
+  border:1px solid var(--border); border-radius:16px;
+  padding:clamp(20px,4vw,44px); overflow-y:auto;
+  flex-direction:column; gap:14px;
+}
+.slide.active{display:flex}
+.tag{
+  align-self:flex-start; font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--accent); font-weight:700;
+}
+h1{font-size:clamp(24px,4vw,36px); margin:0 0 6px 0; line-height:1.15}
+h2{font-size:clamp(20px,3vw,28px); margin:0; color:var(--accent)}
+p{margin:0; color:var(--muted); font-size:16px; line-height:1.5}
+.sub{color:var(--muted); font-size:18px}
+pre{
+  background:var(--panel2); border:1px solid var(--border); border-radius:10px;
+  padding:14px 16px; overflow-x:auto; margin:0; font-size:14px; line-height:1.55;
+}
+code{font-family:"SF Mono",Consolas,"Courier New",monospace; color:var(--code)}
+.c{color:var(--muted)}
+.note{
+  background:var(--panel2); border-left:3px solid var(--accent2);
+  border-radius:8px; padding:10px 14px; font-size:15px; color:var(--text);
+}
+.title-slide{align-items:center; justify-content:center; text-align:center; gap:10px}
+.nav{
+  display:flex; align-items:center; justify-content:space-between;
+  width:100%; max-width:920px; margin-top:14px; color:var(--muted); font-size:14px;
+}
+.btn{
+  background:var(--panel2); border:1px solid var(--border); color:var(--text);
+  padding:8px 16px; border-radius:8px; cursor:pointer; font-size:14px;
+}
+.btn:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.35; cursor:default}
+#counter{font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <section class="slide active title-slide">
+    <div class="tag">Exposición JavaScript</div>
+    <h1>Variables, valores y tipos de datos</h1>
+    <p class="sub">Literales, tipos de datos, scope, coerción y referencias</p>
+  </section>
+
+  <section class="slide">
+    <div class="tag">1 · Declaración de variables</div>
+    <h2>const, let y persona</h2>
+    <pre><span class="c">const</span> PI = 3.1416;
+<span class="c">let</span> edad = 20;
+edad = 21;
+<span class="c">const</span> persona = { nombre: <span class="code">"Juan"</span> };
+persona.nombre = <span class="code">"Juanjo"</span>;</pre>
+    <p class="note"><code>const</code> no permite reasignar la variable, pero sí permite modificar propiedades de un objeto. <code>let</code> sí se puede reasignar.</p>
+  </section>
+
+  <section class="slide">
+    <div class="tag">2 · Scope de bloque</div>
+    <h2>let vs var dentro de un if</h2>
+    <pre><span class="c">if</span> (true) {
+  <span class="c">let</span> enBloque = <span class="code">"solo vive aquí"</span>;
+  <span class="c">var</span> seEscapa = <span class="code">"var ignora el bloque"</span>;
+}
+console.log(seEscapa); <span class="c">// funciona</span>
+console.log(enBloque); <span class="c">// ReferenceError</span></pre>
+    <p class="note"><code>let</code> vive solo dentro del bloque <code>{ }</code>. <code>var</code> tiene scope de función, no de bloque: se "escapa" del if.</p>
+  </section>
+
+  <section class="slide">
+    <div class="tag">3 · Tipos de datos primitivos</div>
+    <h2>number, string, boolean, undefined, null, bigint, symbol</h2>
+    <pre><span class="c">const</span> numero = 42;
+<span class="c">const</span> texto = `Edad: ${edad}`;
+<span class="c">const</span> booleano = true;
+<span class="c">const</span> indefinido = undefined;
+<span class="c">const</span> nulo = null;
+<span class="c">const</span> grande = 9007199254740993n;
+<span class="c">const</span> simbolo = Symbol(<span class="code">"id"</span>);</pre>
+    <p class="note">JS tiene 7 tipos primitivos. Los arreglos, objetos y funciones son del tipo <code>object</code> / <code>function</code>.</p>
+  </section>
+
+  <section class="slide">
+    <div class="tag">4 · Rarezas del lenguaje</div>
+    <h2>typeof, arrays y precisión numérica</h2>
+    <pre>console.log(typeof null);        <span class="c">// "object" (bug histórico)</span>
+console.log(typeof NaN);         <span class="c">// "number"</span>
+console.log(Array.isArray([1,2,3])); <span class="c">// true</span>
+console.log(0.1 + 0.2 === 0.3);  <span class="c">// false</span></pre>
+    <p class="note">Los decimales se guardan en binario y eso genera pequeños errores de precisión: 0.1 + 0.2 da 0.30000000000000004.</p>
+  </section>
+
+  <section class="slide">
+    <div class="tag">5 · Coerción de tipos</div>
+    <h2>"5" + 3 vs "5" - 3, == vs ===</h2>
+    <pre>console.log(<span class="code">"5"</span> + 3);  <span class="c">// "53" (concatena)</span>
+console.log(<span class="code">"5"</span> - 3);  <span class="c">// 2 (convierte a número)</span>
+console.log(5 == <span class="code">"5"</span>);  <span class="c">// true</span>
+console.log(5 === <span class="code">"5"</span>); <span class="c">// false</span></pre>
+    <p class="note"><code>==</code> convierte tipos antes de comparar. <code>===</code> nunca convierte: compara valor y tipo. Por eso siempre se recomienda usar <code>===</code>.</p>
+  </section>
+
+  <section class="slide">
+    <div class="tag">6 · Valor vs referencia</div>
+    <h2>Primitivos se copian, objetos se comparten</h2>
+    <pre><span class="c">let</span> x = 10, y = x; y = 20;
+console.log(x, y);          <span class="c">// 10 20</span>
+
+<span class="c">const</span> a1 = [1, 2];
+<span class="c">const</span> a2 = a1; a2.push(3);
+console.log(a1);            <span class="c">// [1, 2, 3]</span>
+
+<span class="c">const</span> copia = [...a1]; copia.push(4);
+console.log(a1, copia);     <span class="c">// [1,2,3] [1,2,3,4]</span></pre>
+    <p class="note">Números se copian por valor (independientes). Arrays/objetos se copian por referencia: <code>a2</code> apunta al mismo array que <code>a1</code>. El spread <code>[...a1]</code> sí crea un array nuevo.</p>
+  </section>
+
+  <section class="slide">
+    <div class="tag">7 · Hoisting, TDZ y shadowing</div>
+    <h2>El comportamiento oculto de var y let</h2>
+    <pre>console.log(mensaje); <span class="c">// undefined (var se iza)</span>
+<span class="c">var</span> mensaje = <span class="code">"hola"</span>;
+
+console.log(nombre2); <span class="c">// ReferenceError (TDZ)</span>
+<span class="c">let</span> nombre2 = <span class="code">"Juan"</span>;
+
+<span class="c">let</span> nivel = <span class="code">"afuera"</span>;
+{ <span class="c">let</span> nivel = <span class="code">"adentro"</span>; console.log(nivel); }
+console.log(nivel); <span class="c">// "afuera"</span></pre>
+    <p class="note"><code>var</code> se "iza" con valor <code>undefined</code>. <code>let</code> existe pero está bloqueada (Temporal Dead Zone) hasta su línea. El shadowing permite que una variable interna tape a una externa sin pisarla.</p>
+  </section>
+
+  <section class="slide">
+    <div class="tag">8 · Comparaciones e igualdad</div>
+    <h2>Casos raros y valores falsy</h2>
+    <pre>console.log([] == false);        <span class="c">// true</span>
+console.log(null == undefined);  <span class="c">// true</span>
+console.log(null === undefined); <span class="c">// false</span>
+console.log(NaN === NaN);        <span class="c">// false</span>
+console.log(Object.is(NaN, NaN));<span class="c">// true</span>
+
+console.log(Boolean(0), Boolean(""), Boolean(null),
+            Boolean(undefined), Boolean(NaN)); <span class="c">// todos false</span></pre>
+    <p class="note">NaN nunca es igual a sí mismo con <code>===</code>; <code>Object.is</code> corrige ese caso especial. Existen 6 valores "falsy" en JS: 0, "", null, undefined, NaN y false.</p>
+  </section>
+
+  <section class="slide">
+    <div class="tag">9 · Copia superficial vs profunda</div>
+    <h2>{...spread} vs structuredClone</h2>
+    <pre><span class="c">const</span> original = { datos: { edad: 20 } };
+<span class="c">const</span> copiaSuperficial = { ...original };
+copiaSuperficial.datos.edad = 99;
+console.log(original.datos.edad); <span class="c">// 99 !!</span>
+
+<span class="c">const</span> copiaProfunda = structuredClone(original);
+copiaProfunda.datos.edad = 1;
+console.log(original.datos.edad); <span class="c">// sigue en 99</span></pre>
+    <p class="note">El spread solo copia el primer nivel: lo anidado sigue siendo la misma referencia compartida. <code>structuredClone</code> crea una copia totalmente independiente en todos los niveles.</p>
+  </section>
+
+</div>
+
+<div class="nav">
+  <button class="btn" id="prev">← Anterior</button>
+  <span id="counter">1 / 10</span>
+  <button class="btn" id="next">Siguiente →</button>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+let i = 0;
+const counter = document.getElementById('counter');
+const prev = document.getElementById('prev');
+const next = document.getElementById('next');
+function render(){
+  slides.forEach((s,idx)=>s.classList.toggle('active', idx===i));
+  counter.textContent = (i+1) + ' / ' + slides.length;
+  prev.disabled = i===0;
+  next.disabled = i===slides.length-1;
+}
+prev.addEventListener('click', ()=>{ if(i>0){ i--; render(); }});
+next.addEventListener('click', ()=>{ if(i<slides.length-1){ i++; render(); }});
+document.addEventListener('keydown', (e)=>{
+  if(e.key==='ArrowRight') next.click();
+  if(e.key==='ArrowLeft') prev.click();
+});
+render();
+</script>
+</body>
+</html>
