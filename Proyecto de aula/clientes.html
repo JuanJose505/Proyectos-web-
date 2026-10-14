@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clientes | TecnoMovil</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <a class="logo" href="productos.html">
+      <span class="logo-icono">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="#ffffff" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+      </span>
+      <span class="logo-texto">
+        <strong>Tecno<span>Movil</span></strong>
+        <small>Panel admin</small>
+      </span>
+    </a>
+
+    <nav class="menu">
+      <p class="menu-titulo">Menú principal</p>
+      <a class="menu-link" href="ordenes.html">Órdenes <span class="contador">12</span></a>
+      <a class="menu-link" href="productos.html">Productos</a>
+      <a class="menu-link activo" href="clientes.html">Clientes</a>
+
+      <p class="menu-titulo">Espacio de trabajo</p>
+      <a class="menu-link" href="inventario.html">Inventario</a>
+    </nav>
+
+    <div class="ayuda">
+      <strong>¿Necesitas ayuda?</strong>
+      <p>Nuestro equipo de soporte está aquí para ayudarte.</p>
+      <a href="#">Contactar a soporte →</a>
+    </div>
+
+    <div class="usuario">
+      <span class="avatar">AJ</span>
+      <div>
+        <strong>Alex Johnson</strong>
+        <small>Administrador</small>
+      </div>
+    </div>
+  </aside>
+
+  <div class="fondo-oscuro oculto" id="fondo"></div>
+
+  <div class="pagina">
+    <header class="topbar">
+      <button class="boton-menu" id="boton-menu">☰</button>
+      <p class="ruta">Páginas / <strong>Clientes</strong></p>
+      <div class="topbar-derecha">
+        <span class="avatar">AJ</span>
+      </div>
+    </header>
+
+    <main class="contenido">
+      <div id="vista-listado">
+        <div class="encabezado">
+          <div>
+            <p class="estado"><span class="punto"></span> Tu tienda está activa</p>
+            <h1>Clientes</h1>
+            <p class="subtitulo">Administra la información de tus clientes.</p>
+          </div>
+        </div>
+
+        <div class="tarjeta">
+          <div class="tarjeta-arriba">
+            <div>
+              <h3>Clientes</h3>
+              <p class="gris">Personas registradas en tu tienda</p>
+            </div>
+            <button class="boton boton-morado" id="boton-nuevo">+ Agregar cliente</button>
+          </div>
+          <div class="lista" id="lista-clientes">
+          <div class="fila" data-nombre="Olivia Rhye" data-correo="olivia.rhye@example.com" data-telefono="3000000000">
+            <span class="avatar c1">OR</span>
+            <div class="fila-info">
+              <strong>Olivia Rhye</strong>
+              <span>olivia.rhye@example.com · +57 300 000 0000</span>
+            </div>
+            <span class="etiqueta verde">Activo</span>
+            <span class="botones-fila"><button class="boton-icono boton-editar">✎</button><button class="boton-icono peligro boton-eliminar">🗑</button></span>
+          </div>
+          <div class="fila" data-nombre="Phoenix Baker" data-correo="phoenix.baker@example.com" data-telefono="3000000000">
+            <span class="avatar c2">PB</span>
+            <div class="fila-info">
+              <strong>Phoenix Baker</strong>
+              <span>phoenix.baker@example.com · +57 300 000 0000</span>
+            </div>
+            <span class="etiqueta verde">Activo</span>
+            <span class="botones-fila"><button class="boton-icono boton-editar">✎</button><button class="boton-icono peligro boton-eliminar">🗑</button></span>
+          </div>
+          <div class="fila" data-nombre="Lana Steiner" data-correo="lana.steiner@example.com" data-telefono="3000000000">
+            <span class="avatar c3">LS</span>
+            <div class="fila-info">
+              <strong>Lana Steiner</strong>
+              <span>lana.steiner@example.com · +57 300 000 0000</span>
+            </div>
+            <span class="etiqueta verde">Activo</span>
+            <span class="botones-fila"><button class="boton-icono boton-editar">✎</button><button class="boton-icono peligro boton-eliminar">🗑</button></span>
+          </div>
+          <div class="fila" data-nombre="Demi Wilkinson" data-correo="demi.wilkinson@example.com" data-telefono="3000000000">
+            <span class="avatar c4">DW</span>
+            <div class="fila-info">
+              <strong>Demi Wilkinson</strong>
+              <span>demi.wilkinson@example.com · +57 300 000 0000</span>
+            </div>
+            <span class="etiqueta verde">Activo</span>
+            <span class="botones-fila"><button class="boton-icono boton-editar">✎</button><button class="boton-icono peligro boton-eliminar">🗑</button></span>
+          </div>
+          <div class="fila" data-nombre="Candice Wu" data-correo="candice.wu@example.com" data-telefono="3000000000">
+            <span class="avatar c5">CW</span>
+            <div class="fila-info">
+              <strong>Candice Wu</strong>
+              <span>candice.wu@example.com · +57 300 000 0000</span>
+            </div>
+            <span class="etiqueta verde">Activo</span>
+            <span class="botones-fila"><button class="boton-icono boton-editar">✎</button><button class="boton-icono peligro boton-eliminar">🗑</button></span>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORMULARIO (sirve para registrar y para editar) -->
+      <section class="oculto" id="vista-formulario">
+        <div class="tarjeta caja-form">
+          <h2 id="titulo-formulario">Registrar cliente</h2>
+          <p class="gris">Completa los datos del cliente.</p>
+          <form class="formulario" id="formulario" novalidate>
+            <div class="campo">
+              <label for="nombre">Nombre completo</label>
+              <input type="text" id="nombre">
+              <p class="error" id="nombre-error"></p>
+            </div>
+            <div class="campo">
+              <label for="correo">Correo electrónico</label>
+              <input type="text" id="correo">
+              <p class="error" id="correo-error"></p>
+            </div>
+            <div class="campo">
+              <label for="telefono">Teléfono (10 números)</label>
+              <input type="text" id="telefono" maxlength="10">
+              <p class="error" id="telefono-error"></p>
+            </div>
+            <div class="botones-form">
+              <button type="button" class="boton boton-blanco" id="boton-cancelar">Cancelar</button>
+              <button type="submit" class="boton boton-morado">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Ventana de confirmación para eliminar -->
+  <div class="modal oculto" id="modal">
+    <div class="modal-caja">
+      <h2>¿Eliminar cliente?</h2>
+      <p class="gris" id="modal-texto"></p>
+      <div class="botones-form">
+        <button class="boton boton-blanco" id="modal-cancelar">Cancelar</button>
+        <button class="boton boton-rojo" id="modal-aceptar">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="aviso oculto" id="aviso"></div>
+
+  <script src="js/comun.js"></script>
+  <script src="js/clientes.js"></script>
+</body>
+</html>
