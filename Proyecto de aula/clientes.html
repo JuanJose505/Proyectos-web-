@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Clientes | TecnoMovil</title>
+  <link rel="icon" href="img/transparent-image.svg">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -23,7 +24,7 @@
 
     <nav class="menu">
       <p class="menu-titulo">Menú principal</p>
-      <a class="menu-link" href="ordenes.html">Órdenes <span class="contador">12</span></a>
+      <a class="menu-link" href="ordenes.html">Órdenes <span class="contador" id="insignia-ordenes">0</span></a>
       <a class="menu-link" href="productos.html">Productos</a>
       <a class="menu-link activo" href="clientes.html">Clientes</a>
 
@@ -73,55 +74,13 @@
               <h3>Clientes</h3>
               <p class="gris">Personas registradas en tu tienda</p>
             </div>
-            <button class="boton boton-morado" id="boton-nuevo">+ Agregar cliente</button>
-          </div>
-          <div class="lista" id="lista-clientes">
-          <div class="fila" data-nombre="Olivia Rhye" data-correo="olivia.rhye@example.com" data-telefono="3000000000">
-            <span class="avatar c1">OR</span>
-            <div class="fila-info">
-              <strong>Olivia Rhye</strong>
-              <span>olivia.rhye@example.com · +57 300 000 0000</span>
+            <div class="acciones">
+              <input class="buscar" id="buscador" type="search" placeholder="Buscar cliente...">
+              <button class="boton boton-morado" id="boton-nuevo">+ Agregar cliente</button>
             </div>
-            <span class="etiqueta verde">Activo</span>
-            <span class="botones-fila"><button class="boton-icono boton-editar">✎</button><button class="boton-icono peligro boton-eliminar">🗑</button></span>
           </div>
-          <div class="fila" data-nombre="Phoenix Baker" data-correo="phoenix.baker@example.com" data-telefono="3000000000">
-            <span class="avatar c2">PB</span>
-            <div class="fila-info">
-              <strong>Phoenix Baker</strong>
-              <span>phoenix.baker@example.com · +57 300 000 0000</span>
-            </div>
-            <span class="etiqueta verde">Activo</span>
-            <span class="botones-fila"><button class="boton-icono boton-editar">✎</button><button class="boton-icono peligro boton-eliminar">🗑</button></span>
-          </div>
-          <div class="fila" data-nombre="Lana Steiner" data-correo="lana.steiner@example.com" data-telefono="3000000000">
-            <span class="avatar c3">LS</span>
-            <div class="fila-info">
-              <strong>Lana Steiner</strong>
-              <span>lana.steiner@example.com · +57 300 000 0000</span>
-            </div>
-            <span class="etiqueta verde">Activo</span>
-            <span class="botones-fila"><button class="boton-icono boton-editar">✎</button><button class="boton-icono peligro boton-eliminar">🗑</button></span>
-          </div>
-          <div class="fila" data-nombre="Demi Wilkinson" data-correo="demi.wilkinson@example.com" data-telefono="3000000000">
-            <span class="avatar c4">DW</span>
-            <div class="fila-info">
-              <strong>Demi Wilkinson</strong>
-              <span>demi.wilkinson@example.com · +57 300 000 0000</span>
-            </div>
-            <span class="etiqueta verde">Activo</span>
-            <span class="botones-fila"><button class="boton-icono boton-editar">✎</button><button class="boton-icono peligro boton-eliminar">🗑</button></span>
-          </div>
-          <div class="fila" data-nombre="Candice Wu" data-correo="candice.wu@example.com" data-telefono="3000000000">
-            <span class="avatar c5">CW</span>
-            <div class="fila-info">
-              <strong>Candice Wu</strong>
-              <span>candice.wu@example.com · +57 300 000 0000</span>
-            </div>
-            <span class="etiqueta verde">Activo</span>
-            <span class="botones-fila"><button class="boton-icono boton-editar">✎</button><button class="boton-icono peligro boton-eliminar">🗑</button></span>
-          </div>
-          </div>
+          <div class="lista" id="listado"></div>
+          <p class="vacio oculto" id="mensaje-vacio">No hay resultados para mostrar.</p>
         </div>
       </div>
 
@@ -170,7 +129,14 @@
 
   <div class="aviso oculto" id="aviso"></div>
 
-  <script src="js/comun.js"></script>
+  <script src="js/almacenamiento.js"></script>
+  <script src="js/datos-iniciales.js"></script>
+  <script src="js/datos.js"></script>
+  <script src="js/validaciones.js"></script>
+  <script src="js/formato.js"></script>
+  <script src="js/interfaz.js"></script>
+  <script src="js/menu.js"></script>
+  <script src="js/crud.js"></script>
   <script src="js/clientes.js"></script>
 </body>
 </html>

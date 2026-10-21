@@ -1,225 +1,107 @@
-// ===== Elementos que voy a usar =====
-const vistaListado = document.getElementById("vista-listado");
-const vistaFormulario = document.getElementById("vista-formulario");
-const tabla = document.getElementById("tabla-productos");
-const formulario = document.getElementById("formulario");
-const modal = document.getElementById("modal");
+// RESPONSABILIDAD: lo propio de la pantalla de Productos.
 
-let filaEditando = null; // si es null, el formulario está registrando uno nuevo
-let filaAEliminar = null;
-let imagenActual = ""; // dirección de la imagen elegida ("" = sin imagen)
-
+const formularioProducto = document.getElementById("formulario");
 const campoImagen = document.getElementById("imagen");
 const vistaPrevia = document.getElementById("vista-previa");
+let imagenDelFormulario = ""; // imagen elegida en el formulario ("" = sin imagen)
 
-const iconos = { "Audio": "🎧", "Vestibles": "⌚", "Cámaras": "📷", "Celulares": "📱" };
-
-// ===== Cambiar entre el listado y el formulario =====
-function mostrarListado() {
-  vistaFormulario.classList.add("oculto");
-  vistaListado.classList.remove("oculto");
-  window.scrollTo(0, 0);
+// ----- Listado -----
+function crearCeldaProducto(producto) {
+  const contenedor = crearElemento("span", "persona");
+  contenedor.append(crearMiniaturaProducto(producto), crearElemento("strong", "", producto.nombre));
+  return crearCelda(contenedor);
 }
 
-function mostrarFormulario(titulo) {
-  document.getElementById("titulo-formulario").textContent = titulo;
-  limpiarErrores();
-  vistaListado.classList.add("oculto");
-  vistaFormulario.classList.remove("oculto");
-  window.scrollTo(0, 0);
-}
-
-// Muestra u oculta la vista previa de la imagen en el formulario
-function mostrarVistaPrevia(direccion) {
-  imagenActual = direccion;
-  if (direccion === "") {
-    vistaPrevia.classList.add("oculto");
-  } else {
-    vistaPrevia.src = direccion;
-    vistaPrevia.classList.remove("oculto");
-  }
-}
-
-// ===== Elegir una imagen =====
-campoImagen.addEventListener("change", function () {
-  const archivo = campoImagen.files[0];
-  mostrarError("imagen", "");
-
-  if (archivo === undefined) {
-    return;
-  }
-
-  if (!archivo.type.startsWith("image/")) {
-    mostrarError("imagen", "El archivo debe ser una imagen (JPG, PNG, WEBP...).");
-    campoImagen.value = "";
-  } else if (archivo.size > 2 * 1024 * 1024) {
-    mostrarError("imagen", "La imagen no puede pesar más de 2 MB.");
-    campoImagen.value = "";
-  } else {
-    mostrarVistaPrevia(URL.createObjectURL(archivo));
-  }
-});
-
-// ===== Dibujar una fila de la tabla con los datos de un producto =====
-function dibujarFila(fila, p) {
-  fila.dataset.nombre = p.nombre;
-  fila.dataset.categoria = p.categoria;
-  fila.dataset.precio = p.precio;
-  fila.dataset.unidades = p.unidades;
-  fila.dataset.imagen = p.imagen;
-
-  // Si hay imagen la muestro; si no, el emoji de la categoría
-  let miniatura = iconos[p.categoria];
-  if (p.imagen !== "") {
-    miniatura = '<img src="' + p.imagen + '" alt="">';
-  }
-
-  let color = "verde";
-  if (Number(p.unidades) < 20) {
-    color = "naranja";
-  }
-
-  fila.innerHTML =
-    '<td><span class="persona"><span class="miniatura">' + miniatura + '</span><strong></strong></span></td>' +
-    '<td>' + p.categoria + '</td>' +
-    '<td>$' + Number(p.precio).toLocaleString("en-US") + '</td>' +
-    '<td><span class="etiqueta ' + color + '">' + p.unidades + ' unidades</span></td>' +
-    '<td class="derecha"><span class="botones-fila">' +
-    '<button class="boton-icono boton-editar">✎</button>' +
-    '<button class="boton-icono peligro boton-eliminar">🗑</button></span></td>';
-
-  // El nombre lo escribo con textContent para que sea seguro
-  fila.querySelector("strong").textContent = p.nombre;
+function crearFilaProducto(producto) {
+  const fila = crearElemento("tr");
+  fila.dataset.id = producto.id;
+  fila.append(
+    crearCeldaProducto(producto),
+    crearCelda(producto.categoria),
+    crearCelda(formatearPrecio(producto.precio)),
+    crearCelda(crearEtiquetaStock(producto.unidades, "unidades")),
+    crearCelda(crearBotonesDeFila())
+  );
+  fila.lastChild.classList.add("derecha");
+  return fila;
 }
 
 // "4 productos registrados · 4 categorías"
-function actualizarContador() {
-  const filas = tabla.querySelectorAll("tr");
-  const categorias = [];
-  for (let i = 0; i < filas.length; i++) {
-    if (!categorias.includes(filas[i].dataset.categoria)) {
-      categorias.push(filas[i].dataset.categoria);
-    }
-  }
+function actualizarContadorProductos(productos) {
+  const categorias = new Set(productos.map(function (producto) { return producto.categoria; }));
   document.getElementById("contador").textContent =
-    filas.length + " productos registrados · " + categorias.length + " categorías";
+    productos.length + " productos registrados · " + categorias.size + " categorías";
 }
 
-// ===== Botones del formulario =====
-document.getElementById("boton-nuevo").addEventListener("click", function () {
-  filaEditando = null;
-  formulario.reset();
-  mostrarVistaPrevia("");
-  mostrarFormulario("Registrar producto");
-});
-
-document.getElementById("boton-cancelar").addEventListener("click", mostrarListado);
-
-// ===== Clic dentro de la tabla: ¿fue en editar o en eliminar? =====
-tabla.addEventListener("click", function (evento) {
-  const fila = evento.target.closest("tr");
-
-  if (evento.target.closest(".boton-editar")) {
-    filaEditando = fila;
-    document.getElementById("nombre").value = fila.dataset.nombre;
-    document.getElementById("categoria").value = fila.dataset.categoria;
-    document.getElementById("precio").value = fila.dataset.precio;
-    document.getElementById("unidades").value = fila.dataset.unidades;
-    campoImagen.value = "";
-    mostrarVistaPrevia(fila.dataset.imagen || "");
-    mostrarFormulario("Editar producto");
-  }
-
-  if (evento.target.closest(".boton-eliminar")) {
-    filaAEliminar = fila;
-    document.getElementById("modal-texto").textContent = "¿Seguro que quieres eliminar " + fila.dataset.nombre + "?";
-    modal.classList.remove("oculto");
-  }
-});
-
-// ===== Ventana de confirmación para eliminar =====
-document.getElementById("modal-cancelar").addEventListener("click", function () {
-  modal.classList.add("oculto");
-});
-
-document.getElementById("modal-aceptar").addEventListener("click", function () {
-  filaAEliminar.remove();
-  modal.classList.add("oculto");
-  actualizarContador();
-  mostrarAviso("Producto eliminado.");
-});
-
-// ===== Guardar (registrar o editar) con validación =====
-formulario.addEventListener("submit", function (evento) {
-  evento.preventDefault(); // para que la página no se recargue
-
-  const p = {
-    nombre: document.getElementById("nombre").value.trim(),
-    categoria: document.getElementById("categoria").value,
-    precio: document.getElementById("precio").value,
-    unidades: document.getElementById("unidades").value,
-    imagen: imagenActual
+// ----- Formulario -----
+function leerFormularioProducto() {
+  return {
+    nombre: valorDe("nombre"),
+    categoria: valorDe("categoria"),
+    precio: valorDe("precio"),
+    unidades: valorDe("unidades"),
+    imagen: imagenDelFormulario
   };
+}
 
-  let todoBien = true;
-  limpiarErrores();
+function convertirProducto(datos) {
+  return { ...datos, precio: Number(datos.precio), unidades: Number(datos.unidades) };
+}
 
-  if (p.nombre.length < 3) {
-    mostrarError("nombre", "El nombre debe tener al menos 3 letras.");
-    todoBien = false;
-  }
-
-  if (p.categoria === "") {
-    mostrarError("categoria", "Selecciona una categoría.");
-    todoBien = false;
-  }
-
-  if (p.precio === "") {
-    mostrarError("precio", "Escribe el precio.");
-    todoBien = false;
-  } else if (Number(p.precio) <= 0) {
-    mostrarError("precio", "El precio debe ser mayor que 0.");
-    todoBien = false;
-  }
-
-  if (p.unidades === "") {
-    mostrarError("unidades", "Escribe las unidades disponibles.");
-    todoBien = false;
-  } else if (Number(p.unidades) < 0 || !Number.isInteger(Number(p.unidades))) {
-    mostrarError("unidades", "Las unidades deben ser un número entero, 0 o más.");
-    todoBien = false;
-  }
-
-  if (todoBien === false) {
-    return; // me quedo en el formulario mostrando los errores
-  }
-
-  if (filaEditando === null) {
-    // Registrar: creo una fila nueva y la pongo de primera en la tabla
-    const fila = document.createElement("tr");
-    dibujarFila(fila, p);
-    tabla.prepend(fila);
-    mostrarAviso("Producto registrado correctamente.");
+function mostrarImagenEnFormulario(imagen) {
+  imagenDelFormulario = imagen;
+  mostrarSi(vistaPrevia, imagen !== "");
+  if (imagen === "") {
+    vistaPrevia.removeAttribute("src");
   } else {
-    // Editar: vuelvo a dibujar la fila que estaba editando
-    dibujarFila(filaEditando, p);
-    mostrarAviso("Cambios guardados correctamente.");
+    vistaPrevia.src = imagen;
   }
+}
 
-  actualizarContador();
-  mostrarListado();
-});
+function llenarFormularioProducto(producto) {
+  escribirValor("nombre", producto.nombre);
+  escribirValor("categoria", producto.categoria);
+  escribirValor("precio", producto.precio);
+  escribirValor("unidades", producto.unidades);
+  mostrarImagenEnFormulario(producto.imagen || "");
+}
 
-// ===== Buscador =====
-document.getElementById("buscador").addEventListener("input", function () {
-  const texto = this.value.toLowerCase();
-  const filas = tabla.querySelectorAll("tr");
-
-  for (let i = 0; i < filas.length; i++) {
-    if (filas[i].textContent.toLowerCase().includes(texto)) {
-      filas[i].classList.remove("oculto");
-    } else {
-      filas[i].classList.add("oculto");
-    }
+function alElegirImagen() {
+  const archivo = campoImagen.files[0];
+  mostrarError("imagen", "");
+  if (archivo === undefined) {
+    return;
   }
+  const problema = validarArchivoImagen(archivo);
+  if (problema !== "") {
+    mostrarError("imagen", problema);
+    campoImagen.value = "";
+    return;
+  }
+  reducirImagen(archivo)
+    .then(mostrarImagenEnFormulario)
+    .catch(function () { mostrarError("imagen", "No se pudo leer la imagen."); });
+}
+
+campoImagen.addEventListener("change", alElegirImagen);
+// Cada vez que el formulario se reinicia, también se limpia la imagen
+formularioProducto.addEventListener("reset", function () { mostrarImagenEnFormulario(""); });
+
+iniciarCrud({
+  clave: "productos",
+  camposBusqueda: ["nombre", "categoria"],
+  textos: {
+    nuevo: "Registrar producto",
+    editar: "Editar producto",
+    registrado: "Producto registrado correctamente.",
+    actualizado: "Cambios guardados correctamente.",
+    eliminado: "Producto eliminado.",
+    confirmarEliminar: function (producto) { return "¿Seguro que quieres eliminar " + producto.nombre + "?"; }
+  },
+  crearFila: crearFilaProducto,
+  leerFormulario: leerFormularioProducto,
+  llenarFormulario: llenarFormularioProducto,
+  validar: validarProducto,
+  convertir: convertirProducto,
+  alPintar: actualizarContadorProductos
 });

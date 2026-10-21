@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Productos | TecnoMovil</title>
+  <link rel="icon"  href="img/transparent-image.svg">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -23,7 +24,7 @@
 
     <nav class="menu">
       <p class="menu-titulo">Menú principal</p>
-      <a class="menu-link" href="ordenes.html">Órdenes <span class="contador">12</span></a>
+      <a class="menu-link" href="ordenes.html">Órdenes <span class="contador" id="insignia-ordenes">0</span></a>
       <a class="menu-link activo" href="productos.html">Productos</a>
       <a class="menu-link" href="clientes.html">Clientes</a>
 
@@ -96,38 +97,10 @@
                   <th class="derecha">Acciones</th>
                 </tr>
               </thead>
-              <tbody id="tabla-productos">
-                <tr data-nombre="Sony WH-1000XM5" data-categoria="Audio" data-precio="349" data-unidades="84">
-                  <td><span class="persona"><span class="miniatura">🎧</span><strong>Sony WH-1000XM5</strong></span></td>
-                  <td>Audio</td>
-                  <td>$349</td>
-                  <td><span class="etiqueta verde">84 unidades</span></td>
-                  <td class="derecha"><span class="botones-fila"><button class="boton-icono boton-editar">✎</button><button class="boton-icono peligro boton-eliminar">🗑</button></span></td>
-                </tr>
-                <tr data-nombre="Apple Watch Series 9" data-categoria="Vestibles" data-precio="399" data-unidades="42">
-                  <td><span class="persona"><span class="miniatura">⌚</span><strong>Apple Watch Series 9</strong></span></td>
-                  <td>Vestibles</td>
-                  <td>$399</td>
-                  <td><span class="etiqueta verde">42 unidades</span></td>
-                  <td class="derecha"><span class="botones-fila"><button class="boton-icono boton-editar">✎</button><button class="boton-icono peligro boton-eliminar">🗑</button></span></td>
-                </tr>
-                <tr data-nombre="Sony Alpha a7 IV" data-categoria="Cámaras" data-precio="2498" data-unidades="18">
-                  <td><span class="persona"><span class="miniatura">📷</span><strong>Sony Alpha a7 IV</strong></span></td>
-                  <td>Cámaras</td>
-                  <td>$2,498</td>
-                  <td><span class="etiqueta naranja">18 unidades</span></td>
-                  <td class="derecha"><span class="botones-fila"><button class="boton-icono boton-editar">✎</button><button class="boton-icono peligro boton-eliminar">🗑</button></span></td>
-                </tr>
-                <tr data-nombre="iPhone 16 Pro" data-categoria="Celulares" data-precio="999" data-unidades="67">
-                  <td><span class="persona"><span class="miniatura">📱</span><strong>iPhone 16 Pro</strong></span></td>
-                  <td>Celulares</td>
-                  <td>$999</td>
-                  <td><span class="etiqueta verde">67 unidades</span></td>
-                  <td class="derecha"><span class="botones-fila"><button class="boton-icono boton-editar">✎</button><button class="boton-icono peligro boton-eliminar">🗑</button></span></td>
-                </tr>
-              </tbody>
+              <tbody id="listado"></tbody>
             </table>
-          </div>
+            </div>
+            <p class="vacio oculto" id="mensaje-vacio">No hay resultados para mostrar.</p>
         </div>
       </div>
 
@@ -193,7 +166,15 @@
 
   <div class="aviso oculto" id="aviso"></div>
 
-  <script src="js/comun.js"></script>
+  <script src="js/almacenamiento.js"></script>
+  <script src="js/datos-iniciales.js"></script>
+  <script src="js/datos.js"></script>
+  <script src="js/validaciones.js"></script>
+  <script src="js/formato.js"></script>
+  <script src="js/interfaz.js"></script>
+  <script src="js/menu.js"></script>
+  <script src="js/imagenes.js"></script>
+  <script src="js/crud.js"></script>
   <script src="js/productos.js"></script>
 </body>
 </html>

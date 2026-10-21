@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Inventario | TecnoMovil</title>
+  <link rel="icon" href="img/transparent-image.svg">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -23,7 +24,7 @@
 
     <nav class="menu">
       <p class="menu-titulo">Menú principal</p>
-      <a class="menu-link" href="ordenes.html">Órdenes <span class="contador">12</span></a>
+      <a class="menu-link" href="ordenes.html">Órdenes <span class="contador" id="insignia-ordenes">0</span></a>
       <a class="menu-link" href="productos.html">Productos</a>
       <a class="menu-link" href="clientes.html">Clientes</a>
 
@@ -72,47 +73,22 @@
             <h3>Resumen de inventario</h3>
             <p class="gris">Niveles actuales de stock de tus productos</p>
           </div>
+          <input class="buscar" id="buscador" type="search" placeholder="Buscar producto...">
         </div>
-        <div class="lista">
-          <div class="fila">
-            <span class="miniatura">🎧</span>
-            <div class="fila-info">
-              <strong>Sony WH-1000XM5</strong>
-              <span>Audio</span>
-            </div>
-            <span class="etiqueta verde">84 en stock</span>
-          </div>
-          <div class="fila">
-            <span class="miniatura">⌚</span>
-            <div class="fila-info">
-              <strong>Apple Watch Series 9</strong>
-              <span>Vestibles</span>
-            </div>
-            <span class="etiqueta verde">42 en stock</span>
-          </div>
-          <div class="fila">
-            <span class="miniatura">📷</span>
-            <div class="fila-info">
-              <strong>Sony Alpha a7 IV</strong>
-              <span>Cámaras</span>
-            </div>
-            <span class="etiqueta naranja">18 en stock</span>
-          </div>
-          <div class="fila">
-            <span class="miniatura">📱</span>
-            <div class="fila-info">
-              <strong>iPhone 16 Pro</strong>
-              <span>Celulares</span>
-            </div>
-            <span class="etiqueta verde">67 en stock</span>
-          </div>
-        </div>
+        <div class="lista" id="listado"></div>
+        <p class="vacio oculto" id="mensaje-vacio">No hay resultados para mostrar.</p>
       </div>
     </main>
   </div>
 
   <div class="aviso oculto" id="aviso"></div>
 
-  <script src="js/comun.js"></script>
+  <script src="js/almacenamiento.js"></script>
+  <script src="js/datos-iniciales.js"></script>
+  <script src="js/datos.js"></script>
+  <script src="js/formato.js"></script>
+  <script src="js/interfaz.js"></script>
+  <script src="js/menu.js"></script>
+  <script src="js/inventario.js"></script>
 </body>
 </html>

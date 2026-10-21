@@ -1,187 +1,104 @@
-// ===== Elementos que voy a usar =====
-const vistaListado = document.getElementById("vista-listado");
-const vistaFormulario = document.getElementById("vista-formulario");
-const tabla = document.getElementById("tabla-ordenes");
-const formulario = document.getElementById("formulario");
-const filtro = document.getElementById("filtro-estado");
-const modal = document.getElementById("modal");
+// RESPONSABILIDAD: lo propio de la pantalla de Órdenes.
 
-let filaEditando = null; // si es null, el formulario está registrando una nueva
-let filaAEliminar = null;
-let siguienteOrden = 7830; // número de la próxima orden
+const ESTADOS_ORDEN = {
+  entregada: { texto: "Entregada", color: "verde" },
+  proceso: { texto: "En proceso", color: "lila" },
+  pendiente: { texto: "Pendiente", color: "naranja" },
+  cancelada: { texto: "Cancelada", color: "rojo" }
+};
 
-const meses = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+const filtroEstado = document.getElementById("filtro-estado");
 
-// ===== Cambiar entre el listado y el formulario =====
-function mostrarListado() {
-  vistaFormulario.classList.add("oculto");
-  vistaListado.classList.remove("oculto");
-  window.scrollTo(0, 0);
+// ----- Listado -----
+function crearCeldaCliente(nombreCliente) {
+  const contenedor = crearElemento("span", "persona");
+  contenedor.append(crearAvatar(nombreCliente), crearElemento("span", "", nombreCliente));
+  return crearCelda(contenedor);
 }
 
-function mostrarFormulario(titulo) {
-  document.getElementById("titulo-formulario").textContent = titulo;
-  limpiarErrores();
-  vistaListado.classList.add("oculto");
-  vistaFormulario.classList.remove("oculto");
-  window.scrollTo(0, 0);
+function crearFilaOrden(orden) {
+  const estado = ESTADOS_ORDEN[orden.estado];
+  const fila = crearElemento("tr");
+  fila.dataset.id = orden.id;
+  fila.append(
+    crearCelda(orden.codigo),
+    crearCeldaCliente(orden.cliente),
+    crearCelda(orden.producto),
+    crearCelda(formatearFecha(orden.fecha)),
+    crearCelda(formatearPrecio(orden.total)),
+    crearCelda(crearEtiqueta(estado.texto, estado.color)),
+    crearCelda(crearBotonesDeFila())
+  );
+  fila.firstChild.classList.add("id-orden");
+  fila.lastChild.classList.add("derecha");
+  return fila;
 }
 
-// "2025-06-24" -> "24 jun 2025"
-function formatearFecha(fecha) {
-  const partes = fecha.split("-");
-  return Number(partes[2]) + " " + meses[Number(partes[1]) - 1] + " " + partes[0];
+function pasaFiltroDeEstado(orden) {
+  return filtroEstado.value === "todas" || orden.estado === filtroEstado.value;
 }
 
-// ===== Dibujar una fila de la tabla con los datos de una orden =====
-function dibujarFila(fila, o) {
-  fila.dataset.cliente = o.cliente;
-  fila.dataset.producto = o.producto;
-  fila.dataset.fecha = o.fecha;
-  fila.dataset.total = o.total;
-  fila.dataset.estado = o.estado;
-
-  let texto = "Entregada";
-  let color = "verde";
-  if (o.estado === "proceso") {
-    texto = "En proceso";
-    color = "lila";
-  } else if (o.estado === "pendiente") {
-    texto = "Pendiente";
-    color = "naranja";
-  } else if (o.estado === "cancelada") {
-    texto = "Cancelada";
-    color = "rojo";
-  }
-
-  fila.innerHTML =
-    '<td class="id-orden">' + fila.dataset.id + '</td>' +
-    '<td><span class="persona"><span class="avatar c' + (o.cliente.length % 5 + 1) + '">' + iniciales(o.cliente) + '</span><span class="nombre-cliente"></span></span></td>' +
-    '<td>' + o.producto + '</td>' +
-    '<td>' + formatearFecha(o.fecha) + '</td>' +
-    '<td><strong>$' + Number(o.total).toLocaleString("en-US") + '</strong></td>' +
-    '<td><span class="etiqueta ' + color + '">' + texto + '</span></td>' +
-    '<td class="derecha"><span class="botones-fila">' +
-    '<button class="boton-icono boton-editar">✎</button>' +
-    '<button class="boton-icono peligro boton-eliminar">🗑</button></span></td>';
-
-  fila.querySelector(".nombre-cliente").textContent = o.cliente;
+// ----- Formulario -----
+// "#ORD-7829" -> la siguiente es "#ORD-7830"
+function calcularCodigoOrden(ordenes) {
+  const numeros = ordenes.map(function (orden) { return Number(orden.codigo.replace("#ORD-", "")); });
+  const mayor = numeros.length > 0 ? Math.max(...numeros) : 7000;
+  return "#ORD-" + (mayor + 1);
 }
 
-// ===== Filtro por estado =====
-function aplicarFiltro() {
-  const filas = tabla.querySelectorAll("tr");
-  for (let i = 0; i < filas.length; i++) {
-    if (filtro.value === "todas" || filas[i].dataset.estado === filtro.value) {
-      filas[i].classList.remove("oculto");
-    } else {
-      filas[i].classList.add("oculto");
-    }
-  }
+function agregarCodigoDeOrden(datos) {
+  return { ...datos, codigo: calcularCodigoOrden(leerLista("ordenes")) };
 }
 
-filtro.addEventListener("change", aplicarFiltro);
-
-// ===== Botones del formulario =====
-document.getElementById("boton-nuevo").addEventListener("click", function () {
-  filaEditando = null;
-  formulario.reset();
-  mostrarFormulario("Registrar orden");
-});
-
-document.getElementById("boton-cancelar").addEventListener("click", mostrarListado);
-
-// ===== Clic dentro de la tabla: ¿fue en editar o en eliminar? =====
-tabla.addEventListener("click", function (evento) {
-  const fila = evento.target.closest("tr");
-
-  if (evento.target.closest(".boton-editar")) {
-    filaEditando = fila;
-    document.getElementById("cliente").value = fila.dataset.cliente;
-    document.getElementById("producto").value = fila.dataset.producto;
-    document.getElementById("fecha").value = fila.dataset.fecha;
-    document.getElementById("total").value = fila.dataset.total;
-    document.getElementById("estado").value = fila.dataset.estado;
-    mostrarFormulario("Editar orden");
-  }
-
-  if (evento.target.closest(".boton-eliminar")) {
-    filaAEliminar = fila;
-    document.getElementById("modal-texto").textContent = "¿Seguro que quieres eliminar la orden " + fila.dataset.id + "?";
-    modal.classList.remove("oculto");
-  }
-});
-
-// ===== Ventana de confirmación para eliminar =====
-document.getElementById("modal-cancelar").addEventListener("click", function () {
-  modal.classList.add("oculto");
-});
-
-document.getElementById("modal-aceptar").addEventListener("click", function () {
-  filaAEliminar.remove();
-  modal.classList.add("oculto");
-  mostrarAviso("Orden eliminada.");
-});
-
-// ===== Guardar (registrar o editar) con validación =====
-formulario.addEventListener("submit", function (evento) {
-  evento.preventDefault();
-
-  const o = {
-    cliente: document.getElementById("cliente").value.trim(),
-    producto: document.getElementById("producto").value,
-    fecha: document.getElementById("fecha").value,
-    total: document.getElementById("total").value,
-    estado: document.getElementById("estado").value
+function leerFormularioOrden() {
+  return {
+    cliente: valorDe("cliente"),
+    producto: valorDe("producto"),
+    fecha: valorDe("fecha"),
+    total: valorDe("total"),
+    estado: valorDe("estado")
   };
+}
 
-  let todoBien = true;
-  limpiarErrores();
+function convertirOrden(datos) {
+  return { ...datos, total: Number(datos.total) };
+}
 
-  if (o.cliente.length < 3) {
-    mostrarError("cliente", "El nombre del cliente debe tener al menos 3 letras.");
-    todoBien = false;
-  }
+function llenarFormularioOrden(orden) {
+  escribirValor("cliente", orden.cliente);
+  escribirValor("producto", orden.producto);
+  escribirValor("fecha", orden.fecha);
+  escribirValor("total", orden.total);
+  escribirValor("estado", orden.estado);
+}
 
-  if (o.producto === "") {
-    mostrarError("producto", "Selecciona un producto.");
-    todoBien = false;
-  }
+// Los clientes y productos que se pueden elegir vienen de lo que hay guardado
+function llenarOpcionesDelFormulario() {
+  llenarOpciones("cliente", leerLista("clientes").map(function (cliente) { return cliente.nombre; }));
+  llenarOpciones("producto", leerLista("productos").map(function (producto) { return producto.nombre; }));
+}
 
-  if (o.fecha === "") {
-    mostrarError("fecha", "Selecciona la fecha.");
-    todoBien = false;
-  }
+llenarOpcionesDelFormulario();
 
-  if (o.total === "") {
-    mostrarError("total", "Escribe el total.");
-    todoBien = false;
-  } else if (Number(o.total) <= 0) {
-    mostrarError("total", "El total debe ser mayor que 0.");
-    todoBien = false;
-  }
-
-  if (o.estado === "") {
-    mostrarError("estado", "Selecciona el estado.");
-    todoBien = false;
-  }
-
-  if (todoBien === false) {
-    return;
-  }
-
-  if (filaEditando === null) {
-    const fila = document.createElement("tr");
-    fila.dataset.id = "#ORD-" + siguienteOrden;
-    siguienteOrden = siguienteOrden + 1;
-    dibujarFila(fila, o);
-    tabla.prepend(fila);
-    mostrarAviso("Orden registrada correctamente.");
-  } else {
-    dibujarFila(filaEditando, o);
-    mostrarAviso("Cambios guardados correctamente.");
-  }
-
-  aplicarFiltro();
-  mostrarListado();
+const pantallaOrdenes = iniciarCrud({
+  clave: "ordenes",
+  camposBusqueda: ["codigo", "cliente", "producto"],
+  textos: {
+    nuevo: "Registrar orden",
+    editar: "Editar orden",
+    registrado: "Orden registrada correctamente.",
+    actualizado: "Cambios guardados correctamente.",
+    eliminado: "Orden eliminada.",
+    confirmarEliminar: function (orden) { return "¿Seguro que quieres eliminar la orden " + orden.codigo + "?"; }
+  },
+  crearFila: crearFilaOrden,
+  leerFormulario: leerFormularioOrden,
+  llenarFormulario: llenarFormularioOrden,
+  validar: validarOrden,
+  convertir: convertirOrden,
+  prepararNuevo: agregarCodigoDeOrden,
+  filtroAdicional: pasaFiltroDeEstado,
+  alPintar: actualizarInsigniaOrdenes
 });
+
+filtroEstado.addEventListener("change", pantallaOrdenes.pintarListado);

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Órdenes | TecnoMovil</title>
+  <link rel="icon" href="img/transparent-image.svg">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -23,7 +24,7 @@
 
     <nav class="menu">
       <p class="menu-titulo">Menú principal</p>
-      <a class="menu-link activo" href="ordenes.html">Órdenes <span class="contador">12</span></a>
+      <a class="menu-link activo" href="ordenes.html">Órdenes <span class="contador" id="insignia-ordenes">0</span></a>
       <a class="menu-link" href="productos.html">Productos</a>
       <a class="menu-link" href="clientes.html">Clientes</a>
 
@@ -74,6 +75,7 @@
               <p class="gris">Consulta y administra todas las órdenes de clientes</p>
             </div>
             <div class="acciones">
+              <input class="buscar" id="buscador" type="search" placeholder="Buscar orden...">
               <select class="selector" id="filtro-estado">
                 <option value="todas">Todas las órdenes</option>
                 <option value="entregada">Entregada</option>
@@ -98,55 +100,10 @@
                   <th class="derecha">Acciones</th>
                 </tr>
               </thead>
-              <tbody id="tabla-ordenes">
-              <tr data-id="#ORD-7829" data-cliente="Olivia Rhye" data-producto="Sony WH-1000XM5" data-fecha="2025-06-24" data-total="349" data-estado="entregada">
-                <td class="id-orden">#ORD-7829</td>
-                <td><span class="persona"><span class="avatar c1">OR</span><span class="nombre-cliente">Olivia Rhye</span></span></td>
-                <td>Sony WH-1000XM5</td>
-                <td>24 jun 2025</td>
-                <td><strong>$349</strong></td>
-                <td><span class="etiqueta verde">Entregada</span></td>
-                <td class="derecha"><span class="botones-fila"><button class="boton-icono boton-editar">✎</button><button class="boton-icono peligro boton-eliminar">🗑</button></span></td>
-              </tr>
-              <tr data-id="#ORD-7828" data-cliente="Phoenix Baker" data-producto="Apple Watch Series 9" data-fecha="2025-06-24" data-total="399" data-estado="proceso">
-                <td class="id-orden">#ORD-7828</td>
-                <td><span class="persona"><span class="avatar c2">PB</span><span class="nombre-cliente">Phoenix Baker</span></span></td>
-                <td>Apple Watch Series 9</td>
-                <td>24 jun 2025</td>
-                <td><strong>$399</strong></td>
-                <td><span class="etiqueta lila">En proceso</span></td>
-                <td class="derecha"><span class="botones-fila"><button class="boton-icono boton-editar">✎</button><button class="boton-icono peligro boton-eliminar">🗑</button></span></td>
-              </tr>
-              <tr data-id="#ORD-7827" data-cliente="Lana Steiner" data-producto="Sony Alpha a7 IV" data-fecha="2025-06-23" data-total="2498" data-estado="entregada">
-                <td class="id-orden">#ORD-7827</td>
-                <td><span class="persona"><span class="avatar c3">LS</span><span class="nombre-cliente">Lana Steiner</span></span></td>
-                <td>Sony Alpha a7 IV</td>
-                <td>23 jun 2025</td>
-                <td><strong>$2,498</strong></td>
-                <td><span class="etiqueta verde">Entregada</span></td>
-                <td class="derecha"><span class="botones-fila"><button class="boton-icono boton-editar">✎</button><button class="boton-icono peligro boton-eliminar">🗑</button></span></td>
-              </tr>
-              <tr data-id="#ORD-7826" data-cliente="Demi Wilkinson" data-producto="iPhone 16 Pro" data-fecha="2025-06-23" data-total="999" data-estado="pendiente">
-                <td class="id-orden">#ORD-7826</td>
-                <td><span class="persona"><span class="avatar c4">DW</span><span class="nombre-cliente">Demi Wilkinson</span></span></td>
-                <td>iPhone 16 Pro</td>
-                <td>23 jun 2025</td>
-                <td><strong>$999</strong></td>
-                <td><span class="etiqueta naranja">Pendiente</span></td>
-                <td class="derecha"><span class="botones-fila"><button class="boton-icono boton-editar">✎</button><button class="boton-icono peligro boton-eliminar">🗑</button></span></td>
-              </tr>
-              <tr data-id="#ORD-7825" data-cliente="Candice Wu" data-producto="Sony WH-1000XM5" data-fecha="2025-06-22" data-total="349" data-estado="cancelada">
-                <td class="id-orden">#ORD-7825</td>
-                <td><span class="persona"><span class="avatar c5">CW</span><span class="nombre-cliente">Candice Wu</span></span></td>
-                <td>Sony WH-1000XM5</td>
-                <td>22 jun 2025</td>
-                <td><strong>$349</strong></td>
-                <td><span class="etiqueta rojo">Cancelada</span></td>
-                <td class="derecha"><span class="botones-fila"><button class="boton-icono boton-editar">✎</button><button class="boton-icono peligro boton-eliminar">🗑</button></span></td>
-              </tr>
-              </tbody>
+              <tbody id="listado"></tbody>
             </table>
           </div>
+          <p class="vacio oculto" id="mensaje-vacio">No hay resultados para mostrar.</p>
         </div>
       </div>
 
@@ -158,17 +115,15 @@
           <form class="formulario" id="formulario" novalidate>
             <div class="campo">
               <label for="cliente">Cliente</label>
-              <input type="text" id="cliente">
+              <select id="cliente">
+                <option value="">Selecciona un cliente</option>
+              </select>
               <p class="error" id="cliente-error"></p>
             </div>
             <div class="campo">
               <label for="producto">Producto</label>
               <select id="producto">
                 <option value="">Selecciona un producto</option>
-                <option value="Sony WH-1000XM5">Sony WH-1000XM5</option>
-                <option value="Apple Watch Series 9">Apple Watch Series 9</option>
-                <option value="Sony Alpha a7 IV">Sony Alpha a7 IV</option>
-                <option value="iPhone 16 Pro">iPhone 16 Pro</option>
               </select>
               <p class="error" id="producto-error"></p>
             </div>
@@ -217,7 +172,14 @@
 
   <div class="aviso oculto" id="aviso"></div>
 
-  <script src="js/comun.js"></script>
+  <script src="js/almacenamiento.js"></script>
+  <script src="js/datos-iniciales.js"></script>
+  <script src="js/datos.js"></script>
+  <script src="js/validaciones.js"></script>
+  <script src="js/formato.js"></script>
+  <script src="js/interfaz.js"></script>
+  <script src="js/menu.js"></script>
+  <script src="js/crud.js"></script>
   <script src="js/ordenes.js"></script>
 </body>
 </html>

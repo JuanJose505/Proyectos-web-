@@ -423,6 +423,13 @@ h3 { margin: 0 0 4px; font-size: 16px; }
 .fila-info strong { display: block; }
 .fila-info span { font-size: 14px; color: var(--gris); overflow-wrap: anywhere; }
 
+.vacio {
+  padding: 24px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--gris);
+}
+
 .botones-fila { display: inline-flex; gap: 8px; }
 
 /* ---------- Responsive ---------- */
