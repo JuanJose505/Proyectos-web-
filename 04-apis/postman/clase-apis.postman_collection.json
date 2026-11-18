@@ -1,0 +1,567 @@
+{
+  "info": {
+    "_postman_id": "ad1130f2-b705-444c-aede-320876a7886c",
+    "name": "Clase de APIs",
+    "description": "Peticiones para explorar APIs REST públicas: anatomía de una petición (método, URL, parámetros, headers, body), códigos de estado y operaciones CRUD.\n\nLas URLs base están en las **variables de la colección** (`jp`, `pokeapi`, `rickmorty`, `meteo`, `nasa`, `nasaKey`). Ábrelas en la pestaña *Variables* de la colección.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Primeros GET",
+      "description": "Leer datos de JSONPlaceholder, una API de prueba con usuarios, posts y comentarios. GET es el método para **pedir** información; no modifica nada en el servidor.",
+      "item": [
+        {
+          "name": "Listar usuarios",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{jp}}/users",
+              "host": [
+                "{{jp}}"
+              ],
+              "path": [
+                "users"
+              ]
+            },
+            "description": "Devuelve un **array** con 10 usuarios. Fíjate en el código de estado (200 OK), el tiempo de respuesta y la pestaña *Headers* de la respuesta (`Content-Type: application/json`)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"El código de estado es 200\", () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Devuelve 10 usuarios\", () => {",
+                  "  pm.expect(pm.response.json()).to.have.lengthOf(10);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Un usuario por id",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{jp}}/users/:id",
+              "host": [
+                "{{jp}}"
+              ],
+              "path": [
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Id del usuario (1 a 10)"
+                }
+              ]
+            },
+            "description": "`:id` es un **parámetro de ruta**: identifica un recurso concreto. Cámbialo en la pestaña *Params → Path Variables*. Ahora la respuesta es un **objeto**, no un array."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"El código de estado es 200\", () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Posts con query params",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{jp}}/posts?userId=1&_limit=3",
+              "host": [
+                "{{jp}}"
+              ],
+              "path": [
+                "posts"
+              ],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "1",
+                  "description": "Filtra por autor"
+                },
+                {
+                  "key": "_limit",
+                  "value": "3",
+                  "description": "Máximo de resultados"
+                }
+              ]
+            },
+            "description": "Lo que va después de `?` son **query params**: filtran u ordenan el resultado. Se separan con `&`. Actívalos y desactívalos en la pestaña *Params* y mira cómo cambia la URL."
+          }
+        },
+        {
+          "name": "Recurso anidado: comentarios de un post",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{jp}}/posts/:id/comments",
+              "host": [
+                "{{jp}}"
+              ],
+              "path": [
+                "posts",
+                ":id",
+                "comments"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Id del post"
+                }
+              ]
+            },
+            "description": "Las rutas expresan relaciones: *los comentarios del post 1*."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. CRUD",
+      "description": "Crear, leer, actualizar y borrar. JSONPlaceholder **simula** los cambios: responde como si se hubieran guardado, pero no guarda nada.\n\n| Operación | Método |\n|---|---|\n| Crear | POST |\n| Leer | GET |\n| Reemplazar | PUT |\n| Modificar en parte | PATCH |\n| Borrar | DELETE |",
+      "item": [
+        {
+          "name": "Crear un post (POST)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{jp}}/posts",
+              "host": [
+                "{{jp}}"
+              ],
+              "path": [
+                "posts"
+              ]
+            },
+            "description": "Los datos van en el **body** como JSON (pestaña *Body → raw → JSON*). El header `Content-Type: application/json` le dice al servidor qué formato le enviamos. Respuesta esperada: **201 Created**, con el objeto creado y su nuevo `id`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Mi primer post\",\n  \"body\": \"Creado desde Postman\",\n  \"userId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"El código de estado es 201\", () => {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"El servidor asigna un id\", () => {",
+                  "  pm.expect(pm.response.json()).to.have.property(\"id\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reemplazar un post (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{jp}}/posts/:id",
+              "host": [
+                "{{jp}}"
+              ],
+              "path": [
+                "posts",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Id del post"
+                }
+              ]
+            },
+            "description": "PUT **reemplaza el recurso completo**: hay que enviar todos los campos.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"title\": \"Título nuevo\",\n  \"body\": \"Contenido nuevo\",\n  \"userId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"El código de estado es 200\", () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modificar un campo (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{jp}}/posts/:id",
+              "host": [
+                "{{jp}}"
+              ],
+              "path": [
+                "posts",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Id del post"
+                }
+              ]
+            },
+            "description": "PATCH cambia **solo los campos enviados**. Compara la respuesta con la del PUT.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Solo cambio el título\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"El código de estado es 200\", () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Borrar un post (DELETE)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{jp}}/posts/:id",
+              "host": [
+                "{{jp}}"
+              ],
+              "path": [
+                "posts",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Id del post"
+                }
+              ]
+            },
+            "description": "No lleva body. Respuesta: 200 con un objeto vacío `{}`."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"El código de estado es 200\", () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Códigos de estado",
+      "description": "2xx = todo bien · 3xx = redirección · 4xx = error del cliente (tú pediste algo mal) · 5xx = error del servidor.",
+      "item": [
+        {
+          "name": "404: usuario que no existe",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{jp}}/users/999",
+              "host": [
+                "{{jp}}"
+              ],
+              "path": [
+                "users",
+                "999"
+              ]
+            },
+            "description": "El recurso no existe: **404 Not Found**. La petición llegó bien al servidor, pero lo pedido no está."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"El código de estado es 404\", () => {",
+                  "  pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "404: Pokémon que no existe",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{pokeapi}}/pokemon/pokemonfalso",
+              "host": [
+                "{{pokeapi}}"
+              ],
+              "path": [
+                "pokemon",
+                "pokemonfalso"
+              ]
+            },
+            "description": "Otra API, mismo código: los códigos de estado son un estándar de HTTP, no de cada API."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"El código de estado es 404\", () => {",
+                  "  pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. APIs públicas",
+      "description": "APIs reales y gratuitas, sin registro.",
+      "item": [
+        {
+          "name": "PokéAPI: un Pokémon",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{pokeapi}}/pokemon/:nombre",
+              "host": [
+                "{{pokeapi}}"
+              ],
+              "path": [
+                "pokemon",
+                ":nombre"
+              ],
+              "variable": [
+                {
+                  "key": "nombre",
+                  "value": "pikachu",
+                  "description": "Nombre en minúsculas o número"
+                }
+              ]
+            },
+            "description": "Respuesta grande y anidada. Busca dentro del JSON: `height`, `weight`, `types[0].type.name`, `sprites.front_default` (abre esa URL: es una imagen)."
+          }
+        },
+        {
+          "name": "Rick and Morty: personajes paginados",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{rickmorty}}/character?page=2&status=alive",
+              "host": [
+                "{{rickmorty}}"
+              ],
+              "path": [
+                "character"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "2",
+                  "description": "Página"
+                },
+                {
+                  "key": "status",
+                  "value": "alive",
+                  "description": "alive, dead o unknown"
+                }
+              ]
+            },
+            "description": "Muchas APIs **paginan**: no devuelven todo de una vez. Mira `info.count`, `info.pages` y `info.next` (la URL de la página siguiente)."
+          }
+        },
+        {
+          "name": "Open-Meteo: clima actual",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{meteo}}/forecast?latitude=4.61&longitude=-74.08&current=temperature_2m,wind_speed_10m&timezone=auto",
+              "host": [
+                "{{meteo}}"
+              ],
+              "path": [
+                "forecast"
+              ],
+              "query": [
+                {
+                  "key": "latitude",
+                  "value": "4.61",
+                  "description": "Latitud"
+                },
+                {
+                  "key": "longitude",
+                  "value": "-74.08",
+                  "description": "Longitud"
+                },
+                {
+                  "key": "current",
+                  "value": "temperature_2m,wind_speed_10m",
+                  "description": "Datos que queremos"
+                },
+                {
+                  "key": "timezone",
+                  "value": "auto",
+                  "description": "Zona horaria"
+                }
+              ]
+            },
+            "description": "Una API que funciona casi solo con query params. Cambia latitud y longitud por las de tu ciudad (búscalas en Google Maps)."
+          }
+        },
+        {
+          "name": "NASA: foto astronómica del día (API key)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{nasa}}/planetary/apod?api_key={{nasaKey}}",
+              "host": [
+                "{{nasa}}"
+              ],
+              "path": [
+                "planetary",
+                "apod"
+              ],
+              "query": [
+                {
+                  "key": "api_key",
+                  "value": "{{nasaKey}}",
+                  "description": "Clave de acceso"
+                }
+              ]
+            },
+            "description": "Muchas APIs exigen una **API key** para saber quién hace las peticiones y limitar el uso. `DEMO_KEY` es una clave pública con pocas peticiones por hora; con una clave propia (gratis en api.nasa.gov) el límite sube. Aquí la clave viene de la variable `nasaKey`.\n\nEsta API a veces responde **500** o **429** (demasiadas peticiones con `DEMO_KEY`). Si te pasa, ya viste un error 5xx o 4xx real: espera un poco y vuelve a intentarlo."
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Ejercicios",
+      "description": "Resuélvelos creando tus propias peticiones en esta carpeta (clic derecho → *Add request*).\n\n1. Trae el Pokémon número 25 usando su número en lugar del nombre. ¿Es el mismo que `pikachu`?\n2. Con PokéAPI, averigua el tipo y la altura de tu Pokémon favorito.\n3. Trae los posts del usuario 3, máximo 5.\n4. Trae solo las tareas (`/todos`) completadas del usuario 1 (pista: `completed=true`).\n5. Crea un usuario con POST en `/users` enviando nombre, email y ciudad. ¿Qué código de estado y qué `id` devuelve?\n6. Busca en Rick and Morty los personajes llamados `smith` (pista: query param `name`).\n7. Consulta la temperatura actual de dos ciudades distintas y compáralas.",
+      "item": [
+        {
+          "name": "Ejemplo: Pokémon por número",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{pokeapi}}/pokemon/25",
+              "host": [
+                "{{pokeapi}}"
+              ],
+              "path": [
+                "pokemon",
+                "25"
+              ]
+            },
+            "description": "Ejercicio 1 resuelto como ejemplo. Para el resto, duplica esta petición (clic derecho → *Duplicate*) y modifícala."
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "jp",
+      "value": "https://jsonplaceholder.typicode.com"
+    },
+    {
+      "key": "pokeapi",
+      "value": "https://pokeapi.co/api/v2"
+    },
+    {
+      "key": "rickmorty",
+      "value": "https://rickandmortyapi.com/api"
+    },
+    {
+      "key": "meteo",
+      "value": "https://api.open-meteo.com/v1"
+    },
+    {
+      "key": "nasa",
+      "value": "https://api.nasa.gov"
+    },
+    {
+      "key": "nasaKey",
+      "value": "DEMO_KEY"
+    }
+  ]
+}
