@@ -5,3 +5,6 @@ soluciones.js
 
 # Archivos de entorno y editor
 node_modules/
+
+# Archivos privados de configuración
+.env

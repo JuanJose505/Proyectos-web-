@@ -3,6 +3,8 @@ import express from "express";
 const app = express();
 app.use(express.json());
 
+import { db } from "./db.js";
+
 // Lista de productos en memoria
 let productos = [
   { id: 1, nombre: "Teclado", precio: 80000, stock: 10 },
@@ -81,28 +83,42 @@ app.put("/productos/:id", (req, res) => {
 });
 
 // 5. PATCH /productos/:id (Actualización parcial - NO exige todos los campos) -> 200, 400 o 404
-app.patch("/productos/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const producto = productos.find((p) => p.id === id);
-  if (!producto) {
-    return res.status(404).json({ error: "No existe" });
+app.patch("/productos/:id", async (req, res) => {
+  try {
+    const { nombre, precio, stock } = req.body ?? {};
+
+    if (nombre === undefined && precio === undefined && stock === undefined) {
+      return res.status(400).json({
+        error: "Envía al menos un campo: nombre, precio o stock",
+      });
+    }
+    if (precio !== undefined && precio < 0) {
+      return res.status(400).json({ error: "El precio debe ser >= 0" });
+    }
+    if (stock !== undefined && stock < 0) {
+      return res.status(400).json({ error: "El stock debe ser >= 0" });
+    }
+
+    const [r] = await db.query(
+      `UPDATE productos
+       SET nombre = COALESCE(?, nombre),
+           precio = COALESCE(?, precio),
+           stock  = COALESCE(?, stock)
+       WHERE id = ?`,
+      [nombre ?? null, precio ?? null, stock ?? null, req.params.id]
+    );
+
+    if (r.affectedRows === 0) {
+      return res.status(404).json({ error: "No existe" });
+    }
+
+    const [filas] = await db.query(
+      "SELECT * FROM productos WHERE id = ?", [req.params.id]
+    );
+    res.status(200).json(filas[0]);
+  } catch (error) {
+    res.status(500).json({ error: "Error en la base de datos" });
   }
-
-  const { nombre, precio, stock } = req.body;
-
-  // Valida que sean >= 0 solo si vienen en el body
-  if (precio !== undefined && precio < 0) {
-    return res.status(400).json({ error: "El precio debe ser >= 0" });
-  }
-  if (stock !== undefined && stock < 0) {
-    return res.status(400).json({ error: "El stock debe ser >= 0" });
-  }
-
-  if (nombre !== undefined) producto.nombre = nombre;
-  if (precio !== undefined) producto.precio = Number(precio);
-  if (stock !== undefined) producto.stock = Number(stock);
-
-  res.status(200).json(producto);
 });
 
 // 6. DELETE /productos/:id (Eliminar producto) -> 204 o 404
