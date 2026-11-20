@@ -1,9 +1,98 @@
 import express from "express";
-
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 const app = express();
 app.use(express.json());
 
 import { db } from "./db.js";
+
+
+app.post("/registro", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: "Faltan datos" });
+    }
+
+    const hash = await bcrypt.hash(password, 10);
+
+    await db.query(
+      "INSERT INTO usuarios (email, password) VALUES (?, ?)",
+      [email, hash]
+    );
+
+    res.status(201).json({ mensaje: "Usuario registrado correctamente" });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Error al registrar usuario" });
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: "Faltan datos" });
+    }
+
+    const [usuarios] = await db.query(
+      "SELECT * FROM usuarios WHERE email = ?",
+      [email]
+    );
+
+    if (usuarios.length === 0) {
+      return res.status(401).json({ error: "Usuario no encontrado" });
+    }
+
+    const usuario = usuarios[0];
+
+    const passwordValida = await bcrypt.compare(
+      password,
+      usuario.password
+    );
+
+    if (!passwordValida) {
+      return res.status(401).json({ error: "Contraseña incorrecta" });
+    }
+
+    const token = jwt.sign(
+      { id: usuario.id, rol: usuario.rol },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({
+      mensaje: "Inicio de sesión exitoso",
+      token
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Error al iniciar sesión" });
+  }
+});
+
+function verificarToken(req, res, next) {
+  const authHeader = req.headers["authorization"];
+
+  if (!authHeader) {
+    return res.status(401).json({ error: "Token no proporcionado" });
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  jwt.verify(token, process.env.JWT_SECRET, (error, usuario) => {
+    if (error) {
+      return res.status(403).json({ error: "Token inválido" });
+    }
+
+    req.usuario = usuario;
+    next();
+  });
+}
 
 // Lista de productos en memoria
 let productos = [
